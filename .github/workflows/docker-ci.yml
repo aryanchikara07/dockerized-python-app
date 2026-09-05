@@ -38,16 +38,18 @@ jobs:
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
-          mkdir -p ~/.ssh
+          KEY_FILE="$RUNNER_TEMP/ec2_key.pem"
+          KNOWN_HOSTS="$RUNNER_TEMP/known_hosts"
 
-          printf '%s\n' "$EC2_SSH_KEY" > "$RUNNER_TEMP/ssh/ec2_key.pem"
+          printf '%s\n' "$EC2_SSH_KEY" > "$KEY_FILE"
+          chmod 600 "$KEY_FILE"
 
-          chmod 600 "$RUNNER_TEMP/ssh/ec2_key.pem"
+          ssh-keyscan -H "$EC2_HOST" > "$KNOWN_HOSTS"
 
-          ssh-keyscan -H "$EC2_HOST" >> "$RUNNER_TEMP/ssh/known_hosts"
-
-          ssh -i "$RUNNER_TEMP/ssh/ec2_key.pem" \
-            -o UserKnownHostsFile="$RUNNER_TEMP/ssh/known_hosts" \
+          ssh \
+            -i "$KEY_FILE" \
+            -o UserKnownHostsFile="$KNOWN_HOSTS" \
+            -o StrictHostKeyChecking=yes \
             "$EC2_USERNAME@$EC2_HOST" << 'EOF'
 
             sudo docker pull aryanchikara/dockerized-python-app:latest
@@ -61,5 +63,4 @@ jobs:
               aryanchikara/dockerized-python-app:latest
 
             sudo docker ps
-
           EOF
