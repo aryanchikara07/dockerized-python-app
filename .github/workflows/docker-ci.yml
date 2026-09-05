@@ -38,7 +38,7 @@ jobs:
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
-          mkdir -p "$RUNNER_TEMP/ssh"
+          mkdir -p ~/.ssh
 
           printf '%s\n' "$EC2_SSH_KEY" > "$RUNNER_TEMP/ssh/ec2_key.pem"
 
