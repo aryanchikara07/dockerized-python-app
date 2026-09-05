@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Welcome to Aryan's Cloud Application - CI/CD"
+    return "Welcome to Aryan's Cloud Application - HTTPS Ready"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
